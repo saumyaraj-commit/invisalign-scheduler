@@ -1,4 +1,4 @@
-from .scheduler import TraySwitch, build_plan, reschedule_from, PlanInput
+from .scheduler import TraySwitch, PlanInput, build_plan, reschedule_from
 from .calendar_ics import write_ics
 from .storage import load_plan, save_plan
 
