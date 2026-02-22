@@ -13,7 +13,7 @@ Always follow your orthodontist’s instructions if they differ from the plan.
 ## If you miss a scheduled switch
 Life happens. If you don’t switch on the planned date:
 1. Switch when you realistically can (as soon as you’re comfortable).
-2. Re-run the tool and choose the **“I missed a switch / reschedule”** option.
+2. Re-run the tool and type 'n' for new plan, or 'r' to reschedule
 3. You’ll only need to confirm:
    - which tray you’re currently on
    - the date you actually switched most recently (or “today”)
@@ -26,4 +26,7 @@ From the repo root:
 
 ```bash
 python -m src.invisalign_scheduler.cli
+
+
+
 
