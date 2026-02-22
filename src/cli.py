@@ -5,7 +5,7 @@ from datetime import date
 from pathlib import Path
 from typing import Optional, Set
 
-from .calendar import write_ics
+from .calendar_ics import write_ics
 from .scheduler import PlanInput, build_plan, reschedule_from
 from .storage import load_plan, save_plan
 
