@@ -1,0 +1,1 @@
+Smart Invisalign tray scheduler that builds a personalized switch plan from your tray count + appointments, varies wear durations using evidence-based defaults, auto-updates when dates slip, and syncs reminders to your calendar.
