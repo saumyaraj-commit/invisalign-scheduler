@@ -14,7 +14,6 @@ def _format_ics_date(d: date) -> str:
 
 
 def _escape(s: str) -> str:
-    # Minimal ICS escaping
     return s.replace("\\", "\\\\").replace(";", "\\;").replace(",", "\\,").replace("\n", "\\n")
 
 
@@ -25,10 +24,6 @@ def write_ics(
     event_prefix: str = "Tray",
     description: Optional[str] = None,
 ) -> Path:
-    """
-    Writes an .ics file with one all-day event per tray switch date.
-    Importable into Apple Calendar, Google Calendar, Outlook, etc.
-    """
     p = Path(out_path)
     p.parent.mkdir(parents=True, exist_ok=True)
 
@@ -42,14 +37,12 @@ def write_ics(
     lines.append(f"X-WR-CALNAME:{_escape(calendar_name)}")
 
     for ts in schedule:
-        # All-day event on switch_on date (start that morning)
         start = ts.switch_on
         end = start + timedelta(days=1)  # all-day events use end-exclusive
 
         summary = f"{event_prefix} {ts.tray:02d} — switch aligner"
         desc = description or "Reminder to switch to the next tray. Follow your orthodontist’s instructions."
 
-        # UID should be unique and stable enough for re-import workflows
         uid = f"invisalign-scheduler-tray-{ts.tray:02d}-{start.isoformat()}"
 
         lines.append("BEGIN:VEVENT")
