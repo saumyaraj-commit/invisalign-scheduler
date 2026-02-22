@@ -16,7 +16,7 @@ ICS_PATH = OUT_DIR / "tray_schedule.ics"
 CSV_PATH = OUT_DIR / "tray_schedule.csv"
 
 
-WELCOME = """Welcome to Invisalign Scheduler (MVP).
+WELCOME = """Welcome to Invisalign Scheduler.
 
 Transparency:
 - This tool is not medical advice.
@@ -26,7 +26,7 @@ Transparency:
 
 If you miss a scheduled switch:
 - Switch when you can, then re-run this tool and choose “reschedule”.
-- You’ll only need to confirm your current tray and the most recent actual switch date; the tool will rebuild the rest.
+- You’ll only need to confirm your current tray and the most recent actual switch date; the tool will rebuild the rest (make sure you are running code from same directory).
 """
 
 
