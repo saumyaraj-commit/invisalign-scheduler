@@ -20,3 +20,10 @@ Life happens. If you don’t switch on the planned date:
    - whether your next appointment estimate changed
 
 The tool will regenerate the schedule **from today onward** and produce a new calendar export.
+
+## How to run
+From the repo root:
+
+```bash
+python -m src.invisalign_scheduler.cli
+
