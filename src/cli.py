@@ -126,6 +126,7 @@ def main() -> None:
             print(f"\nSaved updated plan to {PLAN_PATH}")
             print(f"Wrote calendar file: {ICS_PATH}  (import into Apple/Google Calendar)")
             print(f"Wrote CSV: {CSV_PATH}")
+            print(f"Open the output folder in Finder (Mac): open {OUT_DIR.resolve()}")
             return
 
     # New plan flow
