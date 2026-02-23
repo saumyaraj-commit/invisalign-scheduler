@@ -165,6 +165,7 @@ def main() -> None:
     print("\nHow to use the calendar export:")
     print("- Apple Calendar: open the .ics file to import it.")
     print("- Google Calendar: Settings → Import & export → Import the .ics file.")
+    import subprocess; subprocess.run(["open", str(OUT_DIR.resolve())])
 
 
 if __name__ == "__main__":
