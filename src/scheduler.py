@@ -51,51 +51,85 @@ def _compute_durations_to_hit_deadline(
     default_days: int,
 ) -> List[int]:
     """
-    Return a list of per-tray durations (length n_trays) that makes:
-      start_date + sum(durations[0:n_trays-1]) ~= deadline_final_tray_start
+    AUTO-FIT MODE:
+    Fit trays 1..(N-1) into the available window so that tray N starts by deadline_final_tray_start.
 
-    Interpretation: The sum of durations for trays 1..(N-1) determines when tray N starts.
-    We keep most durations near default_days, adjusting a few by +/- 1 or 2 days to fit.
+    We compute:
+      available_days = (deadline_final_tray_start - start_date).days
+      intervals = N-1
+
+    Then distribute available_days across intervals as evenly as possible:
+      base = available_days // intervals
+      remainder = available_days % intervals
+
+    durations for trays 1..(N-1):
+      [base+1] for 'remainder' trays, then [base] for the rest
+
+    Tray N duration uses default_days (doesn't affect tray N start target).
+    We also clamp durations into a reasonable range; if clamping makes an exact fit impossible,
+    we still return a best-effort schedule.
     """
     if n_trays == 1:
         return [default_days]
 
-    target_gap_days = (deadline_final_tray_start - start_date).days
-    if target_gap_days < 1:
-        # If deadline is effectively at/near start, fallback to defaults.
+    intervals = n_trays - 1
+    available_days = (deadline_final_tray_start - start_date).days
+
+    # If deadline is too close / invalid, fall back to default durations
+    if available_days <= 0:
         return [default_days] * n_trays
 
-    base = [default_days] * n_trays
+    # Evenly distribute the available days across N-1 intervals
+    base = available_days // intervals
+    rem = available_days % intervals
 
-    # We only control trays 1..N-1 to place the start of tray N.
-    base_sum = sum(base[: n_trays - 1])
+    durations = []
+    for i in range(intervals):
+        d = base + (1 if i < rem else 0)
+        durations.append(d)
 
-    delta = target_gap_days - base_sum
-    # delta > 0 means we need MORE days before tray N starts
-    # delta < 0 means we need FEWER days before tray N starts
+    # Reasonable bounds (tunable). We try to keep within these.
+    MIN_DAYS, MAX_DAYS = 7, 21
 
-    # We'll distribute delta across the first N-1 trays by adjusting durations a bit.
-    # Each adjustment step changes duration by +/-1 day.
-    idx = 0
-    max_adjust = 2  # don't swing any tray too wildly in v1
+    # Clamp with best-effort correction to preserve total where possible
+    total_target = sum(durations)
+    durations = [max(MIN_DAYS, min(MAX_DAYS, d)) for d in durations]
 
-    # Convert delta into a series of +/-1 adjustments
-    while delta != 0 and idx < (n_trays - 1) * max_adjust:
-        tray_i = (idx // max_adjust)  # spreads across trays
-        step = 1 if delta > 0 else -1
+    # Try to correct total back toward target within bounds
+    def can_inc(i): return durations[i] < MAX_DAYS
+    def can_dec(i): return durations[i] > MIN_DAYS
 
-        # Proposed new duration for this tray
-        cur = base[tray_i]
-        new = cur + step
+    diff = total_target - sum(durations)  # positive means we need to add days back; negative means remove
+    # Add days back
+    while diff > 0:
+        changed = False
+        for i in range(len(durations)):
+            if can_inc(i):
+                durations[i] += 1
+                diff -= 1
+                changed = True
+                if diff == 0:
+                    break
+        if not changed:
+            break
 
-        # Keep within reasonable bounds (you can tune later)
-        if 10 <= new <= 21:
-            base[tray_i] = new
-            delta -= step
-        idx += 1
+    # Remove extra days
+    while diff < 0:
+        changed = False
+        for i in range(len(durations)):
+            if can_dec(i):
+                durations[i] -= 1
+                diff += 1
+                changed = True
+                if diff == 0:
+                    break
+        if not changed:
+            break
 
-    # If delta couldn't be fully resolved within bounds, we leave residual as-is.
-    return base
+    # Tray N duration doesn't affect tray N start target
+    durations.append(default_days)
+
+    return durations
 
 
 def _shift_off_avoid_dates(
