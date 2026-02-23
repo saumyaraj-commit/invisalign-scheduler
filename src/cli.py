@@ -122,7 +122,7 @@ def main() -> None:
             write_ics(updated.schedule, ICS_PATH, description=desc)
             _write_csv(updated.schedule, CSV_PATH)
             save_plan(updated, PLAN_PATH)
-
+            print(f"\nRemember to manually delete old events from calendar")
             print(f"\nSaved updated plan to {PLAN_PATH}")
             print(f"Wrote calendar file: {ICS_PATH}  (import into Apple/Google Calendar)")
             print(f"Wrote CSV: {CSV_PATH}")
